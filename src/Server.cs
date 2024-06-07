@@ -15,14 +15,15 @@ byte[] successResponse = Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n\r\n");
 byte[] notFoundResponse = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
 
 // Request
-byte[] req = new byte[256];
+byte[] req = new byte[1024];
 socket.Receive(req); // Blocks until request is received
 
-string parsedReq = Encoding.UTF8.GetString(req);
+string[] reqLines = Encoding.UTF8.GetString(req).Split("\r\n");
+string requestLine = reqLines[0];
 
-parsedReq = parsedReq.Substring(parsedReq.IndexOf('/') + 1);
+string[] splitRequestLine = requestLine.Split(" ");
 
-if (parsedReq[0] == ' ')
+if (splitRequestLine[1] == "/") // checks if 2nd argument in request line (aka. request target) is correct
 {
     socket.Send(successResponse);
 }
@@ -30,5 +31,4 @@ else
 {
     socket.Send(notFoundResponse);
 }
-
 
