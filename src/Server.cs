@@ -19,6 +19,7 @@ byte[] req = new byte[1024];
 socket.Receive(req); // Blocks until request is received
 
 string[] reqLines = Encoding.UTF8.GetString(req).Split("\r\n");
+
 string requestLine = reqLines[0];
 
 string[] splitRequestLine = requestLine.Split(" ");
@@ -26,6 +27,17 @@ string[] splitRequestLine = requestLine.Split(" ");
 if (splitRequestLine[1] == "/") // checks if 2nd argument in request line (aka. request target) is correct
 {
     socket.Send(successResponse);
+}
+else if (splitRequestLine[1].StartsWith("/echo/"))
+{
+    string[] endpoint = splitRequestLine[1].Split("/");
+    string responseString = $"HTTP/1.1 200 OK\r\n" +
+                             "Content-Type: text/plain\r\n" +
+                            $"Content-Length: {endpoint[2].Length}\r\n" + // endpoint[2] is /echo/endpoint[2]
+                            $"\r\n{endpoint[2]}";
+
+    byte[] echoResponse = Encoding.UTF8.GetBytes(responseString);
+    socket.Send(echoResponse);
 }
 else
 {
