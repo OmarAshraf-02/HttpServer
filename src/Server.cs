@@ -1,7 +1,5 @@
-using System.Data.SqlTypes;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 int port = 4221;
@@ -12,14 +10,13 @@ server.Start();
 while (true)
 {
     TcpClient client = server.AcceptTcpClient();
-    ThreadPool.QueueUserWorkItem(new WaitCallback(HandleTcp), client);
+    await Task.Run(() => HandleClient(client));
 }
 
-static void HandleTcp(object tcpClientObject)
+static Task HandleClient(TcpClient tcpClient)
 {
     Console.WriteLine("Connected");
-    TcpClient client = (TcpClient)tcpClientObject;
-    NetworkStream stream = client.GetStream();
+    NetworkStream stream = tcpClient.GetStream();
 
     byte[] reqBuffer = new byte[1024];
     string reqData;
@@ -30,48 +27,75 @@ static void HandleTcp(object tcpClientObject)
     string successResponse = "HTTP/1.1 200 OK\r\n\r\n";
     string notFoundResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
 
-    while (bytes != 0)
+    reqData = Encoding.UTF8.GetString(reqBuffer, 0, bytes);
+    string[] lines = reqData.Split("\r\n");
+
+    string requestLine = lines[0];
+
+    string[] splitRequestLine = requestLine.Split(" ");
+    string path = splitRequestLine[1];
+
+    string responseString = "";
+    byte[] responseBytes;
+
+    if (path == "/") // checks if 2nd argument in request line (aka. request target) is correct
     {
-        reqData = Encoding.UTF8.GetString(reqBuffer, 0, bytes);
-        string[] lines = reqData.Split("\r\n");
+        responseString = successResponse;
+    }
+    else if (path == "/user-agent")
+    {
+        string[] headersAndBody = lines[1..];
+        string headerValue = headersAndBody[1].Remove(0, 12); // Removes the header key 'User-Agent'
 
-        string requestLine = lines[0];
+        responseString = "HTTP/1.1 200 OK\r\n" +
+                         "Content-Type: text/plain\r\n" +
+                        $"Content-Length: {headerValue.Length}\r\n" +
+                        $"\r\n{headerValue}";
+    }
+    else if (path.StartsWith("/echo/"))
+    {
+        string[] endpoint = splitRequestLine[1].Split("/");
+        responseString = $"HTTP/1.1 200 OK\r\n" +
+                          "Content-Type: text/plain\r\n" +
+                         $"Content-Length: {endpoint[2].Length}\r\n" + // endpoint[2] is /echo/endpoint[2]
+                         $"\r\n{endpoint[2]}";
+    }
+    else if (path.StartsWith("/files/"))
+    {
+        string dirPath = "/tmp/data/codecrafters.io/http-server-tester";
+        string fNameInPath = splitRequestLine[1].Split("/")[2];
+        string[] filePaths = Directory.GetFiles(dirPath);
 
-        string[] splitRequestLine = requestLine.Split(" ");
-        string path = splitRequestLine[1];
-
-        string responseString;
-        byte[] responseBytes;
-
-        if (path == "/") // checks if 2nd argument in request line (aka. request target) is correct
+        foreach (string pth in filePaths)
         {
-            responseString = successResponse;
-        }
-        else if (path.StartsWith("/echo/"))
-        {
-            string[] endpoint = splitRequestLine[1].Split("/");
-            responseString = $"HTTP/1.1 200 OK\r\n" +
-                              "Content-Type: text/plain\r\n" +
-                             $"Content-Length: {endpoint[2].Length}\r\n" + // endpoint[2] is /echo/endpoint[2]
-                             $"\r\n{endpoint[2]}";
-        }
-        else if (path == "/user-agent")
-        {
-            string[] headersAndBody = lines[1..];
-            string headerValue = headersAndBody[1].Remove(0, 12); // Removes the header key 'User-Agent'
+            Console.WriteLine(pth);
+            string fName = Path.GetFileName(pth);
+            Console.WriteLine(fName);
+            if (fName == fNameInPath)
+            {
+                FileInfo fInfo = new FileInfo(pth);
+                byte[] fContents = File.ReadAllBytes(fInfo.FullName);
+                string content = Encoding.UTF8.GetString(fContents);
 
-            responseString = "HTTP/1.1 200 OK\r\n" +
-                             "Content-Type: text/plain\r\n" +
-                            $"Content-Length: {headerValue.Length}\r\n" +
-                            $"\r\n{headerValue}";
+                responseString = $"HTTP/1.1 200 OK\r\n" +
+                                  "Content-Type: application/octet-stream\r\n" +
+                                 $"Content-Length: {fInfo.Length}\r\n" + // endpoint[2] is /echo/endpoint[2]
+                                 $"\r\n{content}";
+            }
         }
-        else
+
+        if (responseString == "")
         {
             responseString = notFoundResponse;
         }
-
-        responseBytes = Encoding.UTF8.GetBytes(responseString);
-        stream.Write(responseBytes);
     }
+    else
+    {
+        responseString = notFoundResponse;
+    }
+
+    responseBytes = Encoding.UTF8.GetBytes(responseString);
+    stream.Write(responseBytes);
+    return Task.CompletedTask;
 }
 
