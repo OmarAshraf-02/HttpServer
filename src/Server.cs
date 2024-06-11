@@ -38,6 +38,7 @@ class Program
             string[] splitRequestLine = requestLine.Split(" ");
             string httpVerb = splitRequestLine[0];
             string path = splitRequestLine[1];
+            Dictionary<string, string> headers = ParseHttpHeaders(lines);
 
             string responseString = "";
             byte[] responseBytes;
@@ -45,7 +46,7 @@ class Program
 
             if (httpVerb == "GET")
             {
-                responseString = HandleGet(path, responseBuilder, lines, splitRequestLine);
+                responseString = HandleGet(path, responseBuilder, lines, splitRequestLine, headers);
             }
             else if (httpVerb == "POST")
             {
@@ -56,6 +57,24 @@ class Program
             stream.Write(responseBytes);
             return Task.CompletedTask;
         }
+    }
+
+    private static Dictionary<string, string> ParseHttpHeaders(string[] lines)
+    {
+        Dictionary<string, string> headers = new();
+        string[] headerList = lines.Skip(1).Take(lines.Length - 2).ToArray();
+
+        foreach (string header in headerList)
+        {
+            int separatorIndex = header.IndexOf(':');
+            if (separatorIndex == -1) break;
+
+            string? key = header.Substring(0, separatorIndex);
+            string? value = header.Substring(separatorIndex + 1).Trim();
+            headers.Add(key, value);
+        }
+
+        return headers;
     }
 
     private static string HandlePost(string path, string[] splitRequestLine, string body)
@@ -77,7 +96,7 @@ class Program
 
     }
 
-    private static string HandleGet(string path, StringBuilder builder, string[] lines, string[] splitReqLine)
+    private static string HandleGet(string path, StringBuilder builder, string[] lines, string[] splitReqLine, Dictionary<string, string> headers)
     {
         if (path == "/") // checks if 2nd argument in request line (aka. request target) is correct
         {
@@ -98,12 +117,25 @@ class Program
         {
             string[] endpoint = splitReqLine[1].Split("/");
 
-            builder.Append("HTTP/1.1 200 OK\r\n");
-            builder.Append("Content-Type: text/plain\r\n");
-            builder.Append($"Content-Length: {endpoint[2].Length}\r\n"); // endpoint[2] is /echo/endpoint[2]
-            builder.Append($"\r\n{endpoint[2]}");
+            if (!headers.ContainsKey("Accept-Encoding") || headers["Accept-Encoding"] != "gzip")
+            {
+                builder.Append("HTTP/1.1 200 OK\r\n");
+                builder.Append("Content-Type: text/plain\r\n");
+                builder.Append($"Content-Length: {endpoint[2].Length}\r\n"); // endpoint[2] is /echo/endpoint[2]
+                builder.Append($"\r\n{endpoint[2]}");
 
-            return builder.ToString();
+                return builder.ToString();
+            }
+            else
+            {
+                builder.Append("HTTP/1.1 200 OK\r\n");
+                builder.Append($"Content-Encoding: {headers["Accept-Encoding"]}\r\n");
+                builder.Append($"Content-Type: text/plain\r\n");
+                builder.Append($"Content-Length: {endpoint[2].Length}\r\n");
+                builder.Append($"\r\n{endpoint[2]}");
+
+                return builder.ToString();
+            }
         }
         else if (path.StartsWith("/files/"))
         {
