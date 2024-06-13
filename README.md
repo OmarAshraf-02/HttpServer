@@ -106,7 +106,7 @@ curl -v --header "Accept-Encoding: encoding1, gzip, encoding2" http://localhost:
 ```sh
 curl -v --header "User-Agent: foobar/1.2.3" http://localhost:4221/user-agent
 ```
-For this request, the server parse the `User-Agent` header and respond with a `200 Success` with `Content-Type: text/plain` & `Content-Length` set to the length of your `User-Agent` header's value. This value will also be appended to the response body.
+For this request, the server parses the `User-Agent` header and responds with a `200 Success` with `Content-Type: text/plain` & `Content-Length` set to the length of your `User-Agent` header's value. This value will also be appended to the response body.
 
 #### `GET /files/{filename}`
 
