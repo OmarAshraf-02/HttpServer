@@ -68,14 +68,14 @@ To make a GET request, you can use `curl`:
 ```sh
 curl -v http://localhost:4221/
 ```
-This will return a `200 Success` response
+This will return a `200 Success` response.
 
 #### `GET /unsupported`
 
 ```sh
 curl -v http://localhost:4221/abcdefg
 ```
-This will return a `404 Not Found` response as it is not defined in the server
+This will return a `404 Not Found` response as it is not defined in the server.
 
 #### `GET /echo/{str}`
 
