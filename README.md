@@ -57,13 +57,72 @@ Follow these steps to run the project:
 
 The server will start and listen on the specified port. You can send HTTP requests to test its functionality.
 
-### Supported Requests
+## Supported Requests
 
-#### GET Requests
+### `GET` Requests
+
+#### `GET /`
 
 To make a GET request, you can use `curl`:
 
 ```sh
-curl http://localhost:4221/
+curl -v http://localhost:4221/
+```
+This will return a `200 Success` Response
+
+#### `GET /unsupported`
+
+```sh
+curl -v http://localhost:4221/abcdefg
+```
+This will return a `404 Not Found` response as it is not defined in the server
+
+#### `GET /echo/{str}`
+
+```sh
+curl -v http://localhost:4221/echo/foo
+```
+This will return a `200 Success` response, along with the `Content-Type: text/plain` & `Content-Length` with the length of your `{str}` in the path. It will also append the `{str}` to the response body.
+
+#### `GET /echo/{str}` with `Accept-Encoding` header
+
+```sh
+curl -v --header "Accept-Encoding: gzip" http://localhost:4221/echo/foo
+```
+This will return a `200 Success` response. The raw `{str}` will be gzip encoded by the server and then appended to the response body. If you're using `curl` and want to see the response body in the terminal, use the `--output -` curl option (however this will be gibberish and may mess up your terminal). `Content-Length` will be set to the length of the gzip encoded data and the `Content-Type: text/plain`.
+
+If `Accept-Encoding` is set to a comma-separated list of encoding methods, this will be parsed by the server to see if `gzip` is one of the options, so a request such as this will also work:
+
+```sh
+curl -v --header "Accept-Encoding: encoding1, gzip, encoding2" http://localhost:4221/echo/foo
 ```
 
+#### `GET /user-agent`
+
+```sh
+curl -v --header "User-Agent: foobar/1.2.3" http://localhost:4221/user-agent
+```
+For this request, the server parse the `User-Agent` header and respond with a `200 Success` with `Content-Type: text/plain` & `Content-Length` set to the length of your `User-Agent` header's value. This value will also be appended to the response body.
+
+#### `GET /files/{filename}`
+
+```sh
+curl -i http://localhost:4221/files/foo
+```
+This request will search for a file with the name `filename` in the `/data` directory in the project root (not src). If a file with the same name is found, a `200 Success` response will be returned with `Content-Type: application/octet-stream` & `Content-Length` set to the size of the file in bytes. The file contents will also be appended to the response body. If the file is not found, a `404 Not Found` response is returned.
+
+### `POST` Requests
+
+#### `POST /unsupported`
+
+```sh
+curl -v --data "12345" -H "Content-Type: application/octet-stream" http://localhost:4221/unsupported
+```
+Any unsupported post request will return a `404 Not Found` response.
+
+#### `POST /files/{filename}`
+
+```sh
+curl -v --data "12345" -H "Content-Type: application/octet-stream" http://localhost:4221/files/foo
+```
+If a `POST` request is sent to `/files/{filename}`, a file with the name `filename` will be created in the project's `/data` directory. This file's contents will consist of the contents of the request body (In the above case = 12345). A `201 Created` response will then be returned by the server.
