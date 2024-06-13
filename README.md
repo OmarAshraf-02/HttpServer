@@ -68,7 +68,7 @@ To make a GET request, you can use `curl`:
 ```sh
 curl -v http://localhost:4221/
 ```
-This will return a `200 Success` Response
+This will return a `200 Success` response
 
 #### `GET /unsupported`
 
