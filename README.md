@@ -25,3 +25,45 @@ This is a basic HTTP server implementation from scratch made for the CodeCrafter
 - **LINQ**: Used LINQ for string manipulation and collection operations.
 - **File Handling**: Learned how to read from and write to files.
 
+## How to Run
+
+**Ensure you have .NET 8.0 installed**
+
+Follow these steps to run the project:
+
+1. **Clone the repository**:
+
+    ```sh
+    git clone https://github.com/OmarAshraf-02/HttpServer.git
+    ```
+
+2. **Navigate to the project directory**:
+
+    ```sh
+    cd HttpServer
+    ```
+
+3. **Build the project**:
+
+    ```sh
+    dotnet build
+    ```
+
+4. **Run the server**:
+
+    ```sh
+    dotnet run
+    ```
+
+The server will start and listen on the specified port. You can send HTTP requests to test its functionality.
+
+### Supported Requests
+
+#### GET Requests
+
+To make a GET request, you can use `curl`:
+
+```sh
+curl http://localhost:4221/
+```
+
