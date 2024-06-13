@@ -89,7 +89,11 @@ This will return a `200 Success` response, along with the `Content-Type: text/pl
 ```sh
 curl -v --header "Accept-Encoding: gzip" http://localhost:4221/echo/foo
 ```
-This will return a `200 Success` response. The raw `{str}` will be gzip encoded by the server and then appended to the response body. If you're using `curl` and want to see the response body in the terminal, use the `--output -` curl option (however this will be gibberish and may mess up your terminal). `Content-Length` will be set to the length of the gzip encoded data and the `Content-Type: text/plain`.
+This will return a `200 Success` response. The raw `{str}` will be gzip encoded by the server and then appended to the response body. 
+
+If you're using `curl` and want to see the response body in the terminal, use the `--output -` curl option (however this will be gibberish and may mess up your terminal). 
+
+`Content-Length` will be set to the length of the gzip encoded data and the `Content-Type: text/plain`.
 
 If `Accept-Encoding` is set to a comma-separated list of encoding methods, this will be parsed by the server to see if `gzip` is one of the options, so a request such as this will also work:
 
