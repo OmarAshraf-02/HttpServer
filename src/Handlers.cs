@@ -60,7 +60,7 @@ internal static class Handlers
         return path switch
         {
             "/" => Constants.SuccessResponse,
-            "/user-agent" => GetRequestHandlers.HandleUserAgentRequest(lines, builder),
+            "/user-agent" => GetRequestHandlers.HandleUserAgentRequest(lines, builder, headers),
             string pth when pth.StartsWith("/echo/") => GetRequestHandlers.HandleEchoRequest(splitRequestLine, headers, builder),
             string pth when pth.StartsWith("/files/") => GetRequestHandlers.HandleFileRequest(splitRequestLine, builder),
             _ => Constants.NotFoundResponse

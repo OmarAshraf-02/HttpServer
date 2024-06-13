@@ -5,13 +5,6 @@ namespace codecrafters_http_server;
 
 public class Helpers
 {
-    internal static string ExtractUserAgentHeader(string[] lines)
-    {
-        string[] headersAndBody = lines[1..];
-        string headerValue = headersAndBody[1].Remove(0, 12); // Removes the header key 'User-Agent: '
-
-        return headerValue;
-    }
     internal static Dictionary<string, string> ParseHttpHeaders(string[] lines)
     {
         Dictionary<string, string> headers = new();

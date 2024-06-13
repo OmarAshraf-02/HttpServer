@@ -46,13 +46,18 @@ internal class GetRequestHandlers
         return Helpers.BuildFileResponse(filePaths, fNameInPath, builder);
     }
 
-    internal static byte[] HandleUserAgentRequest(string[] lines, StringBuilder builder)
+    internal static byte[] HandleUserAgentRequest(string[] lines, StringBuilder builder, Dictionary<string, string> headers)
     {
-        string headerValue = Helpers.ExtractUserAgentHeader(lines);
+        bool userAgentHeaderExists = headers.TryGetValue("User-Agent", out string? headerValue);
+
+        if (!userAgentHeaderExists)
+        {
+            return Constants.BadRequestResponse;
+        }
 
         builder.Append("HTTP/1.1 200 OK\r\n");
         builder.Append("Content-Type: text/plain\r\n");
-        builder.Append($"Content-Length: {headerValue.Length}\r\n");
+        builder.Append($"Content-Length: {headerValue?.Length}\r\n");
         builder.Append($"\r\n{headerValue}");
 
         return Encoding.UTF8.GetBytes(builder.ToString());
