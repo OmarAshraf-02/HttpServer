@@ -107,9 +107,9 @@ For this request, the server parse the `User-Agent` header and respond with a `2
 #### `GET /files/{filename}`
 
 ```sh
-curl -i http://localhost:4221/files/foo
+curl -i http://localhost:4221/files/foo.txt
 ```
-This request will search for a file with the name `filename` in the `/data` directory in the project root (not src). If a file with the same name is found, a `200 Success` response will be returned with `Content-Type: application/octet-stream` & `Content-Length` set to the size of the file in bytes. The file contents will also be appended to the response body. If the file is not found, a `404 Not Found` response is returned.
+This request will search for a file with the name `filename` in the `/data` directory in the project root (not src). If a file with the same name is found, a `200 Success` response will be returned with `Content-Type: application/octet-stream` & `Content-Length` set to the size of the file in bytes. The file contents will also be appended to the response body. If the file is not found, a `404 Not Found` response is returned. `foo.txt` is included in the `/data` folder of the repository as an example for testing.
 
 ### `POST` Requests
 
