@@ -1,38 +1,27 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/4e99d4b1-d8b2-4826-a202-8090a973a555)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# C# HTTP Server
 
-This is a starting point for C# solutions to the
-["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
+This is a basic HTTP server implementation from scratch made for the CodeCrafters "Build Your Own HTTP Server" challenge.
 
-[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
-protocol that powers the web. In this challenge, you'll build a HTTP/1.1 server
-that is capable of serving multiple clients.
+## What I Learned
 
-Along the way you'll learn about TCP servers,
-[HTTP request syntax](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html),
-and more.
+### Built-In C# Libraries
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+- **System.Net and System.Net.Sockets**: Used for creating TCP listeners and handling network streams.
+- **System.Threading**: Used threading and tasks to support multiple, concurrent requests.
+- **System.Text**: Used for encoding and decoding text data.
+- **System.IO**: Used for file operations.
+- **System.IO.Compression**: Used for compressing data streams.
 
-# Passing the first stage
+### HTTP Concepts
 
-The entry point for your HTTP server implementation is in `src/Server.cs`. Study
-and uncomment the relevant code, and push your changes to pass the first stage:
+- **HTTP Methods**: Implemented basic handling for GET and POST requests.
+- **Headers**: Learned how to parse and use HTTP headers.
+- **Status Codes**: Learned some new HTTP status codes like 405 Method Not Allowed.
+- **Content Encoding**: Implemented support for gzip content encoding.
 
-```sh
-git add .
-git commit -m "pass 1st stage" # any msg
-git push origin master
-```
+### C# Features
 
-Time to move on to the next stage!
+- **Asynchronous Programming**: Used `async` and `await` for asynchronous IO operations.
+- **LINQ**: Used LINQ for string manipulation and collection operations.
+- **File Handling**: Learned how to read from and write to files.
 
-# Stage 2 & beyond
-
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `dotnet (8.0)` installed locally
-1. Run `./your_server.sh` to run your program, which is implemented in
-   `src/Server.cs`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
