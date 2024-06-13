@@ -30,6 +30,7 @@ internal static class Handlers
         };
 
         stream.Write(responseBytes);
+        tcpClient.Close();
         return Task.CompletedTask;
     }
 
