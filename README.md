@@ -27,7 +27,7 @@ This is a basic HTTP server implementation from scratch made for the CodeCrafter
 
 ## How to Run
 
-**Ensure you have .NET 8.0 installed**
+### Ensure you have .NET 8.0 installed
 
 Follow these steps to run the project:
 
